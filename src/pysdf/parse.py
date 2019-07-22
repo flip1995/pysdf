@@ -644,7 +644,10 @@ class Joint(SpatialEntity):
     else: # joint crosses includes
       pose2origin(jointnode, concatenate_matrices(inverse_matrix(parent_pose_world), self.tree_child_link.pose_world))
     if self.type == 'revolute' and self.axis.lower_limit == 0 and self.axis.upper_limit == 0:
-      self.urdf_type = 'fixed'
+      # The CAD Tool exports revolute joints without limits with the upper and lower limit set to 0.
+      # In general in makes sense to transform this joint into a fixed joint. In our use case though,
+      # we want a continuous joint.
+      self.urdf_type = 'continuous'
       jointnode.attrib['type'] = self.urdf_type
     elif self.type == 'universal':
       # Simulate universal robot as
